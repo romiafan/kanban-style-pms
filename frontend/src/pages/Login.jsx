@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { login, saveToken } from '../services/auth';
 import SocialLogin from '../components/SocialLogin';
 
@@ -7,6 +8,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,10 +17,13 @@ const Login = () => {
     try {
       const data = await login({ username, password });
       saveToken(data.token);
-      // Redirect or reload as needed
-      window.location.href = '/';
+      navigate('/'); // Use navigate for client-side routing
     } catch (err) {
-      setError('Login failed');
+      // Try to get a more specific error message from the response
+      const errorMessage = err.response && err.response.data 
+        ? (typeof err.response.data === 'string' ? err.response.data : 'Login failed') 
+        : err.message || 'Login failed';
+      setError(errorMessage);
     }
     setLoading(false);
   };
@@ -48,6 +53,9 @@ const Login = () => {
         </button>
       </form>
       {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+      <p>
+        Don't have an account? <Link to="/register">Register here</Link>
+      </p>
       <SocialLogin />
     </div>
   );

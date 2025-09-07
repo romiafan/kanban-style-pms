@@ -1,0 +1,45 @@
+services:
+  # SQL Server Database
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: kanban-db
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: 'YourStrong!Passw0rd' # Use a more secure password, consider using .env file
+    ports:
+      - "1433:1433"
+    volumes:
+      - db-data:/var/opt/mssql
+
+  # Backend API
+  backend:
+    container_name: kanban-backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5235:8080" # Map host port 5235 to container port 8080
+    depends_on:
+      - db
+    environment:
+      # This connection string points to the 'db' service within Docker's network
+      ConnectionStrings__DefaultConnection: "Server=db;Database=KanbanDB;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True"
+      ASPNETCORE_URLS: "http://+:8080"
+
+  # Frontend Application
+  frontend:
+    container_name: kanban-frontend
+    build:
+      context: ./frontend # Path to the frontend directory
+      dockerfile: Dockerfile # Name of the Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app # Mount local frontend files for hot-reloading
+      - /app/node_modules
+    environment:
+      # This URL is used by the browser, so it must be localhost.
+      VITE_API_BASE_URL: http://localhost:5235 
+
+volumes:
+  db-data:

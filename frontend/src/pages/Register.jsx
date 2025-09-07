@@ -1,56 +1,55 @@
 import React, { useState } from 'react';
-import { register, saveToken } from '../services/auth';
-import SocialLogin from '../components/SocialLogin';
+import { useNavigate } from 'react-router-dom';
 
-const Register = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+function Register() {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const data = await register({ username, password });
-      saveToken(data.token);
-      // Redirect or reload as needed
-      window.location.href = '/';
-    } catch (err) {
-      setError('Registration failed');
-    }
-    setLoading(false);
-  };
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        setError(''); // Clear previous errors
 
-  return (
-    <div style={{ padding: '2rem' }}>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit} style={{ marginBottom: '1rem' }}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={e => setUsername(e.target.value)}
-          style={{ marginBottom: '0.5rem', padding: '0.5rem', width: '100%' }}
-          required
-        /><br />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={e => setPassword(e.target.value)}
-          style={{ marginBottom: '0.5rem', padding: '0.5rem', width: '100%' }}
-          required
-        /><br />
-        <button type="submit" disabled={loading} style={{ padding: '0.5rem 1rem' }}>
-          {loading ? 'Registering...' : 'Register'}
-        </button>
-      </form>
-      {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
-      <SocialLogin />
-    </div>
-  );
-};
+        try {
+            const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/Users/register`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ username, password }),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || 'Registration failed');
+            }
+
+            // On successful registration, redirect to the login page
+            navigate('/login');
+
+        } catch (err) {
+            setError(err.message);
+        }
+    };
+
+    return (
+        <div>
+            <h2>Register</h2>
+            <form onSubmit={handleRegister}>
+                <div>
+                    <label>Username:</label>
+                    <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                </div>
+                <div>
+                    <label>Password:</label>
+                    <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                </div>
+                {error && <p style={{ color: 'red' }}>{error}</p>}
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    );
+}
 
 export default Register;

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import ProjectView from './pages/ProjectView';
@@ -10,7 +10,7 @@ import { getToken } from './services/auth';
 import { ThemeProvider } from './theme/ThemeContext';
 
 function PrivateRoute({ children }) {
-  return getToken() ? children : <Login />;
+  return getToken() ? children : <Navigate to="/login" />;
 }
 
 function App() {

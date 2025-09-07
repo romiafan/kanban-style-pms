@@ -6,14 +6,14 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v9.0": {
-      "KanbanApi/1.0.0": {
+      "KanbanAPI/1.0.0": {
         "dependencies": {
           "Microsoft.AspNetCore.OpenApi": "9.0.8",
           "Microsoft.EntityFrameworkCore.Design": "9.0.8",
           "Microsoft.EntityFrameworkCore.SqlServer": "9.0.8"
         },
         "runtime": {
-          "KanbanApi.dll": {}
+          "KanbanAPI.dll": {}
         }
       },
       "Azure.Core/1.38.0": {
@@ -1011,7 +1011,7 @@
     }
   },
   "libraries": {
-    "KanbanApi/1.0.0": {
+    "KanbanAPI/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

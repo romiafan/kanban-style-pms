@@ -6,18 +6,26 @@ import Dashboard from './pages/Dashboard';
 import ProjectView from './pages/ProjectView';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import { getToken } from './services/auth';
+import { ThemeProvider } from './theme/ThemeContext';
+
+function PrivateRoute({ children }) {
+  return getToken() ? children : <Login />;
+}
 
 function App() {
   return (
-    <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/project/:id" element={<ProjectView />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/project/:id" element={<PrivateRoute><ProjectView /></PrivateRoute>} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
 
